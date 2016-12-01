@@ -79,7 +79,6 @@ def main(daemon, firstStart=False, generation=1):
                     player.fitness += 1000 * counter
                     deadcounter += 1
                 if deadcounter >= len(population):
-                    #print('gen')
                     print(generation)
                     main(False,generation=generation+1)
 

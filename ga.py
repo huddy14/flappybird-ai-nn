@@ -37,8 +37,8 @@ class GeneticAlgorithm():
         w = self.decode_weights(bird.net.weights)
         r = []
         for i in w:
-            if random.randint(0, 1) == 1:
-                r.append(random.random())
+            if random.random() < MUT_RATE:
+                r.append(np.random.uniform(-5,5))
             else:
                 r.append(i)
         mutated_weights = self.encode_weight(r)
@@ -46,17 +46,17 @@ class GeneticAlgorithm():
 
 
     def crossover_best(self):
-        # print('popoulation:')
-        # for p in self.population:
-        #     print(p.fitness)
+        print('popoulation:')
+        for p in self.population:
+            print(p.fitness)
         self.sort_population_by_fitness()
         l = len(self.population)
 
         # picking birds with highest fitness to be parents for new birds
         best = self.population[int(l*(1-BEST_RATE)):]
-        # print('best')
-        # for b in best:
-        #     print(b.fitness)
+        print('best')
+        for b in best:
+            print(b.fitness)
         result = [Bird(w.net.weights) for w in best]
 
         #breeding with random parents - for specified cross rate
