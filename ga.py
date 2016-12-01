@@ -26,7 +26,11 @@ class GeneticAlgorithm():
         self.population.sort(key=op.attrgetter('fitness'))
 
     def grade(self):
-        pass
+        self.sort_population_by_fitness()
+        b = self.population[int(.8*len(self.population)):]
+        for best in b:
+            print('best fitness: {} \n best weights: {}'.format(best.fitness, best.net.weights))
+
 
     def mutate(self, bird):
 
@@ -42,17 +46,17 @@ class GeneticAlgorithm():
 
 
     def crossover_best(self):
-        print('popoulation:')
-        for p in self.population:
-            print(p.fitness)
+        # print('popoulation:')
+        # for p in self.population:
+        #     print(p.fitness)
         self.sort_population_by_fitness()
         l = len(self.population)
 
         # picking birds with highest fitness to be parents for new birds
         best = self.population[int(l*(1-BEST_RATE)):]
-        print('best')
-        for b in best:
-            print(b.fitness)
+        # print('best')
+        # for b in best:
+        #     print(b.fitness)
         result = [Bird(w.net.weights) for w in best]
 
         #breeding with random parents - for specified cross rate
@@ -64,6 +68,9 @@ class GeneticAlgorithm():
         return result
 
     def evolve(self):
+        #grade the last generation before evolving
+        #self.grade()
+
         #croosing over the best birds
         new_pop = self.crossover_best()
 

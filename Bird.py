@@ -1,11 +1,12 @@
 import pygame as pg
 import nn
 import numpy as np
+from random import randint
 
 class Bird:
     def __init__(self, weights=None, ai=None):
         self.x = 60
-        self.y = 200
+        self.y = randint(10,430)
         self.speed = 2
         self.ai = ai
         self.rect = pg.Rect(self.x,self.y,20,20)
