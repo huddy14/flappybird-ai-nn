@@ -3,10 +3,11 @@ import nn
 import numpy as np
 
 class Bird:
-    def __init__(self, weights=None):
+    def __init__(self, weights=None, ai=None):
         self.x = 60
         self.y = 200
         self.speed = 2
+        self.ai = ai
         self.rect = pg.Rect(self.x,self.y,20,20)
         self.dead = False
         if not weights:
@@ -28,6 +29,7 @@ class Bird:
 
     def jump(self):
         self.speed = -10
+        self.fitness -= 3
 
     def draw(self, screen):
         pg.draw.rect(screen, (100,100,100), self.rect)

@@ -22,7 +22,8 @@ def main(firstStart=False, generation=1):
     counter = 0
     if firstStart:
         population = gen.population
-    else: population = gen.crossover_best()
+    else:
+        population = gen.evolve()
 
     fitness = 0
     deadcounter = 0
@@ -43,11 +44,13 @@ def main(firstStart=False, generation=1):
     #print(population)
     while True:
         clock.tick(60)
-        # for event in pg.event.get():
-        #     if event.type == pg.QUIT:
-        #         sys.exit()
-        #     elif event.type == pg.KEYDOWN:
-        #         player.jump()
+
+        #if ai = none
+        for event in pg.event.get():
+            if event.type == pg.KEYDOWN:
+                pg.quit()
+                sys.exit()
+
         fitness += 1
         screen.fill((0,0,0))
         if pipes[0].pipe_down.x < 170 and len(pipes) < 2:
