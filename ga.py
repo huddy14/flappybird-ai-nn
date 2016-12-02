@@ -3,10 +3,10 @@ import random
 from Bird import Bird
 import operator as op
 
-CROSS_RATE = .5
-MUT_RATE = .8
-BEST_RATE = .2
-POP_SIZE = 100
+CROSS_RATE = .8
+MUT_RATE = .6
+BEST_RATE = .3
+POP_SIZE = 50
 
 class GeneticAlgorithm():
 
@@ -33,55 +33,69 @@ class GeneticAlgorithm():
 
 
     def mutate(self, bird):
+        if random.random() < MUT_RATE:
+            w = self.decode_weights(bird.net.weights)
+            r = []
+            for i in w:
+                if random.random() < 0.5:
+                    r.append(random.triangular(-1,1) * i)
+                else:
+                    r.append(i)
+            mutated_weights = self.encode_weight(r)
+            return Bird(mutated_weights)
 
-        w = self.decode_weights(bird.net.weights)
-        r = []
-        for i in w:
-            if random.random() < MUT_RATE:
-                r.append(np.random.uniform(-5,5))
-            else:
-                r.append(i)
-        mutated_weights = self.encode_weight(r)
-        return Bird(mutated_weights)
+        else: return Bird(bird.net.weights)
 
 
-    def crossover_best(self):
+    def crossover(self):
         print('popoulation:')
         for p in self.population:
             print(p.fitness)
         self.sort_population_by_fitness()
+
+
         l = len(self.population)
 
         # picking birds with highest fitness to be parents for new birds
         best = self.population[int(l*(1-BEST_RATE)):]
+        # picking 2 best performing birds to add unchanged to the population
+        leaders = [Bird(best[-1].net.weights),Bird(best[-2].net.weights)]
         print('best')
         for b in best:
             print(b.fitness)
-        result = [Bird(w.net.weights) for w in best]
+        result = leaders
 
         #breeding with random parents - for specified cross rate
-        for i in range(int(l*CROSS_RATE)):
+        while len(result) < POP_SIZE:
             # taking 2 random and different ids to breed
             ids = random.sample(range(len(best)), 2)
-            result.append(self.breed(best[ids[0]].net, best[ids[1]].net))
+            new_bird = self.breed(best[ids[0]].net, best[ids[1]].net)
 
+            #mutating by MUTE_RATE
+            new_bird = self.mutate(new_bird)
+            result.append(new_bird)
+
+        self.population = result
         return result
 
-    def evolve(self):
-        #grade the last generation before evolving
-        #self.grade()
-
-        #croosing over the best birds
-        new_pop = self.crossover_best()
-
-        #mutating the rest of population
-        while len(new_pop) < POP_SIZE:
-            # selecting random bird to mutate weights
-            bird = self.population[random.randint(0, len(self.population) - 1)]
-            new_pop.append(self.mutate(bird))
-
-        self.population = new_pop
-        return new_pop
+    # def evolve(self):
+    #     #grade the last generation before evolving
+    #     #self.grade()
+    #
+    #     self.sort_population_by_fitness()
+    #     l = len(self.population)
+    #     best = self.population[int(l*(1-BEST_RATE)):]
+    #     #croosing over the best birds
+    #     new_pop = self.crossover_best()
+    #
+    #     #mutating the rest of population
+    #     while len(new_pop) < POP_SIZE:
+    #         # selecting random bird to mutate weights
+    #         bird = best[random.randint(0, len(best) - 1)]
+    #         new_pop.append(self.mutate(bird))
+    #
+    #     self.population = new_pop
+    #     return new_pop
 
 
     def breed(self,n1,n2):
@@ -89,8 +103,9 @@ class GeneticAlgorithm():
         W2 = self.decode_weights(n2.weights)
 
         m = int(len(W1)/2)
-
-        new_weights = self.encode_weight(W1[:m] + W2[m:])
+        r_gens = random.randint(1,m*2)
+        new_weights = self.encode_weight(W1[:r_gens] + W2[r_gens:])
+#        new_weights = self.encode_weight([.5 * (w1+w2) for w1,w2 in zip(W1,W2)])
         return Bird(new_weights)
 
 
